@@ -128,19 +128,20 @@ def update_record(sport_name: str, athlete_name: str, percentage: float):
 
     return {"message": "Record updated successfully", "new_value": result.result_value}
 
-@app.get("/popular_sports/")
-def get_popular_sports(min_results: int):
+
+@app.get("/popular_sportsman/")
+def get_popular_sportsman(min_victories: int):
     db = get_db()
     result = (
-        db.query(SportType, func.count(Result.id).label("result_count"))
-        .join(Result, SportType.id == Result.sport_type_id)
-        .group_by(SportType.id)
-        .having(func.count(Result.id) >= min_results)
+        db.query(Athlete, func.count(Result.id).label("victory_count"))
+        .join(Result, Athlete.id == Result.athlete_id)
+        .group_by(Athlete.id)
+        .having(func.count(Result.id) >= min_victories)
         .all()
     )
 
-    sports = [{"sport_type": sport_type, "result_count": result_count} for sport_type, result_count in result]
-    return sports
+    sportsmen = [{"athlete": athlete, "victory_count": victory_count} for athlete, victory_count in result]
+    return sportsmen
 
 
 if __name__ == "__main__":
