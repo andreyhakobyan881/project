@@ -132,16 +132,26 @@ def update_record(sport_name: str, athlete_name: str, percentage: float):
 @app.get("/popular_sportsman/")
 def get_popular_sportsman(min_victories: int):
     db = get_db()
-    result = (
-        db.query(Athlete, func.count(Result.id).label("victory_count"))
-        .join(Result, Athlete.id == Result.athlete_id)
-        .group_by(Athlete.id)
-        .having(func.count(Result.id) >= min_victories)
-        .all()
+    popular_athletes = (
+        db.query(Athlete)
+        .filter(Athlete.victories >= min_victories) 
+        .order_by(Athlete.victories.desc())  
+        .all()  
     )
-
-    sportsmen = [{"athlete": athlete, "victory_count": victory_count} for athlete, victory_count in result]
-    return sportsmen
+    if popular_athletes:
+        return {
+            "athletes": [
+                {
+                    "full_name": athlete.full_name,
+                    "country": athlete.country,
+                    "birth_year": athlete.birth_year,
+                    "victories": athlete.victories
+                }
+                for athlete in popular_athletes
+            ]
+        }
+    else:
+        return {"message": "No athletes found with the specified minimum victories."}
 
 
 if __name__ == "__main__":
