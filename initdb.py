@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, Date, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Float, Date, ForeignKey, Text
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
 from pydantic import BaseModel
 
@@ -13,7 +13,7 @@ class SportType(Base):
     unit = Column(String, nullable=False)  
     world_record = Column(Float, nullable=True) 
     olympic_record = Column(Float, nullable=True)  
-
+    searchable_data = Column(String, nullable=False)   
     results = relationship('Result', back_populates='sport_type')
 
 class SportTypeModel(BaseModel):
@@ -32,7 +32,6 @@ class Athlete(Base):
     country = Column(String, nullable=False) 
     birth_year = Column(Integer, nullable=False)  
     victories = Column(Integer, nullable=False)  
-
     results = relationship('Result', back_populates='athlete')
 
 class AthleteModel(BaseModel):

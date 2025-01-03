@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import join, func
+from sqlalchemy import join, func, text
 import uvicorn
 from initdb import *
 from datetime import datetime
@@ -152,6 +152,13 @@ def get_popular_sportsman(min_victories: int):
         }
     else:
         return {"message": "No athletes found with the specified minimum victories."}
+
+
+@app.get("/search/")
+def search(query: str):
+    db = get_db()
+    results = db.execute(text("SELECT id FROM sport_type WHERE searchable_data LIKE " + query)).fetchall()
+    return {"results": [row[0] for row in results]}
 
 
 if __name__ == "__main__":
